@@ -1,0 +1,66 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+VAGRANTFILE_API_VERSION = "2"
+Vagrant.configure(VAGRANTFILE_API_VERSION ) do |config|
+  config.vm.box = "ubuntu/xenial64"
+  config.vm.network "public_network", ip: "192.168.1.52"
+  # config.vm.provider :scaleway do |scaleway, override|
+  #   scaleway.organization = ''
+  #   scaleway.token = ''
+  #   scaleway.commercial_type = 'C1'
+  #   scaleway.image = ''
+  #   scaleway.name = 'hostname'
+  #   scaleway.ssh_host_attribute = :public_ip_address
+  #   scaleway.region = 'par1'
+  #   override.ssh.private_key_path = '~/.ssh/id_rsa'
+  # end
+  config.vm.provision "shell",
+    path: "bootstrap.sh",
+    name: "Bootstrapping OS"
+  config.vm.provision "shell",
+    path: "../../shared/config.sh",
+    name: "Configuring environment"
+  config.vm.provision "shell",
+    path: "config.sh",
+    name: "Configuring environment [local]"
+  config.vm.provision "shell",
+    path: "../../shared/cert_regen.sh",
+    name: "Reconfiguring default SSL certificate."
+  config.vm.provision "shell",
+    path: "../../shared/diffiehelman.sh",
+    name: "Securing OpenSSL."
+  config.vm.provision "shell",
+   path: "../../shared/php/php7.sh",
+   name: "Configuring for PHP 7"
+  config.vm.provision "shell",
+   path: "../../shared/virtual_users.sh",
+   name: "Adding vmail user."
+  config.vm.provision "shell",
+   path: "../../shared/mysql/mysql.sh",
+   name: "Installing MySQL"
+  config.vm.provision "shell",
+    path: "../../shared/postfix/postfix_sql.sh",
+    name: "Installing and configuring Postfix."
+  config.vm.provision "shell",
+   path: "../../shared/dovecot/dovecot_sql.sh",
+   name: "Installing Dovecot"
+  config.vm.provision "shell",
+   path: "../../shared/dovecot/dovecot_shared.sh",
+   name: "Configuring shared namespace for Dovecot."
+  config.vm.provision "shell",
+   path: "../../shared/dovecot/dovecot_replication.sh",
+   name: "Configuring replication service for Dovecot."
+  config.vm.provision "shell",
+    path: "../../shared/postfix/amavisd.sh",
+    name: "Installing Amavisd."
+  config.vm.provision "shell",
+    path: "../../shared/postfix/dkim_spf.sh",
+    name: "Installing DKIM/SPF."
+  config.vm.provision "shell",
+   path: "horde.sh",
+   name: "Installing Horde"
+  config.vm.provision "shell",
+    path: "post.sh",
+    name: "Performing post-install tasks"
+end

@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+echo 'Setting ENV variables specific to dev install.'
+
+# Set to "deep" or "shallow"
+echo "export GIT_DEPTH=shallow" >> ~/.profile
+
+# @TODO Set hostname? /etc/hostname and /etc/hosts?
+hostname host\.example\.com
+echo -e host\.example\.com | sudo tee -a /etc/hostname
+sed -i 's/localhost/host\.example\.com localhost/g' /etc/hosts
+
+# Domain name
+echo "export DOMAIN=example.com" >> ~/.profile
+
+# Password for the 'mail' user for the 'mail' databsae.
+echo "export MYSQLMAILPASSWORD=mysqlpassword" >> ~/.profile
+
+# Initial Horde/IMAP user.
+echo "export ADMINUSER=username" >> ~/.profile
+echo "export ADMINUSERPASSWORD=adminpassword" >> ~/.profile
+
+# Host for Dovecot replication.
+echo "export REPLICATIONHOST=replication.example.com" >> ~/.profile
+
+# Location of id_rsa file to use for vmail user during replication.
+echo "export REPLICATIONSSHKEY=/var/vmail/.ssh/id_rsa" >> ~/.profile
+
+# Admin email (used when generating LE certificate).
+echo "export ADMINEMAIL=admin@example.com" >> ~/.profile
