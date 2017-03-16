@@ -7,8 +7,10 @@ if which postfix > /dev/null; then
 else
     debconf-set-selections <<< "postfix postfix/mailname string $HOSTNAME"
     debconf-set-selections <<< "postfix postfix/main_mailer_type string Internet Site"
-    sudo apt-get install -y postfix postfix-mysql Postgrey
+    sudo apt-get install -y postfix postfix-mysql postgrey
 
+    postconf -e "smtpd_tls_cert_file=/etc/letsencrypt/live/$HOSTNAME/fullchain.pem"
+    postconf -e "smtpd_tls_key_file=/etc/letsencrypt/live/$HOSTNAME/privkey.pem"
     postconf -e 'smtpd_tls_security_level = may'
     postconf -e 'smtp_tls_security_level = may'
 
@@ -23,8 +25,7 @@ else
     postconf -e 'smtpd_tls_dh1024_param_file = /etc/ssl/private/dhparams.pem'
 
     postconf -e 'smtpd_helo_restrictions = permit_mynetworks, warn_if_reject reject_non_fqdn_hostname, reject_invalid_hostname, permit'
-    postconf -e 'smtpd_sender_restrictions = permit_mynetworks, reject_authenticated_sender_login_mismatch, warn_if_reject reject_non_fqdn_sender, reject_unknown_sender_domain, reject_unauth_pipelining, permit'
-    postconf -e 'smtpd_client_restrictions = reject_rbl_client sbl.spamhaus.org, reject_rbl_client blackholes.easynet.nl'
+    postconf -e 'smtpd_sender_restrictions = permit_mynetworks, warn_if_reject reject_non_fqdn_sender, reject_unknown_sender_domain, reject_unauth_pipelining, permit'    postconf -e 'smtpd_client_restrictions = reject_rbl_client sbl.spamhaus.org, reject_rbl_client blackholes.easynet.nl'
 
     # Note that this enables Postgrey and SPF checks, so they must be installed.
     postconf -e 'smtpd_recipient_restrictions = reject_unauth_pipelining, permit_mynetworks, reject_non_fqdn_recipient, reject_unknown_recipient_domain, reject_unauth_destination, check_policy_service unix:private/policyd-spf, check_policy_service inet:127.0.0.1:10023, permit'
@@ -45,7 +46,7 @@ else
     postconf -e 'inet_interfaces = all'
 
     # Specific to backup MX
-    postconf -e 'relay_recipient_maps = hash:/etc/postfix/relay_recipients'
+    postconf -e 'relay_recipient_maps = hash:/etc/postfix/relay_recipient_maps'
     postconf -e "relay_domains = theupstairsroom.com"
     # CHANGE THIS TO REAL IP
     #postconf -e "proxy_interfaces = 212.47.236.196"

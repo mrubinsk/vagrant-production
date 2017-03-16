@@ -12,7 +12,7 @@ postconf -e 'policyd-spf_time_limit = 3600'
 echo 'Setting up DKIM'
 echo -e 'UserID          opendkim' | sudo tee -a /etc/opendkim.conf
 echo -e 'KeyTable            /etc/opendkim/key.table' | sudo tee -a /etc/opendkim.conf
-echo -e 'SigningTable        /etc/opendkim/signing.table' | sudo tee -a /etc/opendkim.conf
+echo -e 'SigningTable        refile:/etc/opendkim/signing.table' | sudo tee -a /etc/opendkim.conf
 echo -e 'ExternalIgnoreList  /etc/opendkim/trusted.hosts' | sudo tee -a /etc/opendkim.conf
 echo -e 'InternalHosts       /etc/opendkim/trusted.hosts' | sudo tee -a /etc/opendkim.conf
 echo -e 'Canonicalization    relaxed/simple' | sudo tee -a /etc/opendkim.conf
@@ -33,7 +33,7 @@ chown -R opendkim:opendkim /etc/opendkim
 chmod go-rw /etc/opendkim/keys
 
 echo "Creating the directories and configuration files for DKIM."
-echo -e "*.@$DOMAIN mydomain" | sudo tee -a /etc/opendkim/signing.table
+echo -e "*@$DOMAIN mydomain" | sudo tee -a /etc/opendkim/signing.table
 echo -e "mydomain $DOMAIN:dkey:/etc/opendkim/keys/mydomain.private" | sudo tee -a /etc/opendkim/key.table
 trusted="127.0.0.1\n::1\nlocalhost\n$HOSTNAME\n$DOMAIN"
 echo -e $trusted | sudo tee -a /etc/opendkim/trusted.hosts

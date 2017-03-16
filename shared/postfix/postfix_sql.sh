@@ -9,13 +9,13 @@ else
     debconf-set-selections <<< "postfix postfix/main_mailer_type string Internet Site"
     sudo apt-get install -y postfix postfix-mysql postgrey
 
-    aliasmap="user = mail\npassword = $MYSQLMAILPASSWORD\nhosts = 127.0.0.1\ndbname = mail\nquery = SELECT destination FROM alias WHERE source='%s'"
+    aliasmap="user = mail\npassword = $MYSQLMAILPASSWORD\nhosts = 127.0.0.1\ndbname = mail\nquery = SELECT destination FROM alias WHERE source='%u'"
     echo -e $aliasmap | sudo tee -a /etc/postfix/mysql_virtual_alias_maps.cf
 
-    domainmap="user = mail\npassword = $MYSQLMAILPASSWORD\nhosts = 127.0.0.1\ndbname = mail\nquery = SELECT 1 FROM domain WHERE name='%s'"
+    domainmap="user = mail\npassword = $MYSQLMAILPASSWORD\nhosts = 127.0.0.1\ndbname = mail\nquery = SELECT 1 FROM domain WHERE name='%u'"
     echo -e $domainmap | sudo tee -a /etc/postfix/mysql_virtual_domains_maps.cf
 
-    mailboxmap="user = mail\npassword = $MYSQLMAILPASSWORD\nhosts = 127.0.0.1\ndbname = mail\nquery = SELECT 1 FROM mailbox WHERE email='%s'"
+    mailboxmap="user = mail\npassword = $MYSQLMAILPASSWORD\nhosts = 127.0.0.1\ndbname = mail\nquery = SELECT 1 FROM mailbox WHERE email='%u'"
     echo -e $mailboxmap | sudo tee -a /etc/postfix/mysql_virtual_mailbox_maps.cf
 
     postconf -e "smtpd_tls_cert_file=/etc/letsencrypt/live/$HOSTNAME/fullchain.pem"

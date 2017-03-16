@@ -9,4 +9,6 @@ service dovecot restart
 # TODO need to add servername to default-ssl conf before this will work.
 a2ensite default-ssl.conf
 
-letsencrypt --apache --domains $HOSTNAME --email $ADMINEMAIL --agree-tos -n
+# Write out the SQL passwords to the Horde config
+echo -e "\$conf['auth']['params']['password'] = '$MYSQLMAILPASSWORD';" | sudo tee -a /horde/src/horde/config/conf.php
+echo -e "\$conf['sql']['password'] = '$MYSQLPASSWORD';" | sudo tee -a /horde/src/horde/config/conf.php

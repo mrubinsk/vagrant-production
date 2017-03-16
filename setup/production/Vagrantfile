@@ -25,9 +25,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION ) do |config|
     path: "config.sh",
     name: "Configuring environment [local]"
   config.vm.provision "shell",
-    path: "../../shared/cert_regen.sh",
-    name: "Reconfiguring default SSL certificate."
-  config.vm.provision "shell",
     path: "../../shared/diffiehelman.sh",
     name: "Securing OpenSSL."
   config.vm.provision "shell",
@@ -42,6 +39,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION ) do |config|
   config.vm.provision "shell",
     path: "../../shared/postfix/postfix_sql.sh",
     name: "Installing and configuring Postfix."
+  config.vm.provision "shell",
+    path: "../../shared/letsencrypt.sh",
+    name: "Installing and configuring LE."
   config.vm.provision "shell",
    path: "../../shared/dovecot/dovecot_sql.sh",
    name: "Installing Dovecot"
