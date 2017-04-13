@@ -22,7 +22,7 @@ else
     sed -i '/^password_query =.*/s/^/#/g' /etc/dovecot/dovecot-sql.conf.ext
     echo -e "password_query = SELECT email as user, password FROM mailbox WHERE email='%n';" | sudo tee -a /etc/dovecot/dovecot-sql.conf.ext
     echo -e "user_query = SELECT '/var/vmail/%n' as home, 'mdbox:/var/vmail/%n' as mail, 150 AS uid, 8 AS gid FROM mailbox WHERE email = '%n'" | sudo tee -a /etc/dovecot/dovecot-sql.conf.ext
-    echo -e "iterate_query = SELECT email AS user FROM mailbox;" | sudo tee -a /etc/dovecot-sql.conf.ext
+    echo -e "iterate_query = SELECT email AS user FROM mailbox;" | sudo tee -a /etc/dovecot/dovecot-sql.conf.ext
 
     echo -e 'disable_plaintext_auth = yes' | sudo tee -a /etc/dovecot/conf.d/10-auth.conf
     sed -i '/^auth_mechanisms =.*/s/^/#/g' /etc/dovecot/conf.d/10-auth.conf
