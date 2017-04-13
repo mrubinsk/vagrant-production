@@ -9,7 +9,7 @@ shared_namespace="namespace {\n
 }"
 
 echo -e $shared_namespace | sudo tee -a /etc/dovecot/conf.d/10-mail.conf
-echo -e 'mail_plugins = $mail_plugins acl' | sudo tee -a /etc/dovecot/conf.d/10-mail.conf
+echo -e 'mail_plugins = $mail_plugins acl notify replication sieve' | sudo tee -a /etc/dovecot/conf.d/10-mail.conf
 
 if [[ ! -f /etc/dovecot/conf.d/20-imap.conf.orig ]]; then
     mv /etc/dovecot/conf.d/20-imap.conf /etc/dovecot/conf.d/20-imap.conf.orig
