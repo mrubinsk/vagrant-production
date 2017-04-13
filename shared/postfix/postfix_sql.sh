@@ -18,6 +18,10 @@ else
     mailboxmap="user = mail\npassword = $MYSQLMAILPASSWORD\nhosts = 127.0.0.1\ndbname = mail\nquery = SELECT 1 FROM mailbox WHERE email='%u'"
     echo -e $mailboxmap | sudo tee -a /etc/postfix/mysql_virtual_mailbox_maps.cf
 
+    # Allows users to send mail from any of their defined aliases.
+    sendermap="user = mail\npassword = ashley42\nhosts = 127.0.0.1\ndbname = mail\nquery = SELECT mailbox.email FROM mailbox,domain WHERE mailbox.email='%u' UNION SELECT login as email FROM alias WHERE alias.source='%s'"
+    echo -e $sendermap | sudo tee -a /etc/postfix/mysql_virtual_sender_login_maps.cf
+
     postconf -e "smtpd_tls_cert_file=/etc/letsencrypt/live/$HOSTNAME/fullchain.pem"
     postconf -e "smtpd_tls_key_file=/etc/letsencrypt/live/$HOSTNAME/privkey.pem"
     postconf -e 'smtpd_tls_security_level = may'
@@ -40,7 +44,7 @@ else
     # postconf -e 'smtpd_tls_dh1024_param_file = /etc/ssl/private/dhparams.pem'
 
     postconf -e 'smtpd_helo_restrictions = permit_mynetworks, warn_if_reject reject_non_fqdn_hostname, reject_invalid_hostname, permit'
-    postconf -e 'smtpd_sender_restrictions = permit_mynetworks, reject_authenticated_sender_login_mismatch, permit_sasl_authenticated, warn_if_reject reject_non_fqdn_sender, reject_unknown_sender_domain, reject_unauth_pipelining, permit'
+    postconf -e 'smtpd_sender_restrictions = permit_mynetworks, reject_sender_login_mismatch, permit_sasl_authenticated, warn_if_reject reject_non_fqdn_sender, reject_unknown_sender_domain, reject_unauth_pipelining, permit'
     postconf -e 'smtpd_client_restrictions = reject_rbl_client sbl.spamhaus.org, reject_rbl_client blackholes.easynet.nl'
     # Note that this enables Postgrey and SPF checks, so they must be installed.
     postconf -e 'smtpd_recipient_restrictions = reject_unauth_pipelining, permit_mynetworks, permit_sasl_authenticated, reject_non_fqdn_recipient, reject_unknown_recipient_domain, reject_unauth_destination, check_policy_service unix:private/policyd-spf, check_policy_service inet:127.0.0.1:10023, permit'
@@ -65,6 +69,7 @@ else
     postconf -e 'virtual_gid_maps = static:8'
     postconf -e 'virtual_alias_maps = mysql:/etc/postfix/mysql_virtual_alias_maps.cf'
     postconf -e 'virtual_mailbox_domains = mysql:/etc/postfix/mysql_virtual_domains_maps.cf'
+    postconf -e 'smtpd_sender_login_maps = mysql:/etc/postfix/mysql_virtual_sender_login_maps.cf'
     postconf -e 'virtual_transport = dovecot'
 
     postconf -M submission/inet="submission       inet       n       -       -       -       -       smtpd"

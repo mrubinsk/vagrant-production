@@ -28,5 +28,6 @@ CREATE TABLE alias (
   domain_id int(11) NOT NULL,
   source varchar(100) NOT NULL,
   destination varchar(100) NOT NULL,
+  login varchar(100),
   PRIMARY KEY (id)
 );
